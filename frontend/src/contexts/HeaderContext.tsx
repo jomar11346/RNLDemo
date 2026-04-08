@@ -7,7 +7,6 @@ type HeaderContextType = {
 
 const HeaderContext = createContext<HeaderContextType | undefined>(undefined)
 
-// eslint-disable-next-line react-refresh/only-export-components
 export const useHeader = () => {
     const context = useContext(HeaderContext)
 

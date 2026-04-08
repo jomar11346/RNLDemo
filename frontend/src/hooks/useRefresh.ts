@@ -1,12 +1,11 @@
-import { useCallback, useState } from "react";
+import { useCallback, useState } from "react"
 
-/** Bump `refresh` when `handleRefresh` runs so children can react (e.g. refetch lists). */
-export function useRefresh() {
-  const [refresh, setRefresh] = useState(0);
+export const useRefresh = (initialState: boolean) => {
+    const [refresh, setRefresh] = useState(initialState)
 
-  const handleRefresh = useCallback(() => {
-    setRefresh((n) => n + 1);
-  }, []);
+    const handleRefresh = useCallback(() => {
+        setRefresh((prev) => !prev)
+    }, [])
 
-  return { refresh, handleRefresh };
+    return { refresh, handleRefresh };
 }

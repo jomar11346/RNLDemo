@@ -1,6 +1,6 @@
 import { useEffect } from "react";
 import AddGenderForm from "./components/AddGenderForm";
-import GenderList from "./components/GenderList";
+import { GenderList } from "./components/GenderList";
 import ToastMessage from "../../components/ToastMessage/ToastMessage";
 import { useToastMessage } from "../../hooks/useToastMessage";
 import { useRefresh } from "../../hooks/useRefresh";
@@ -16,7 +16,7 @@ const GenderMainPage = () => {
     closeToastMessage,
   } = useToastMessage("", false);
 
-  const { refresh, handleRefresh } = useRefresh();
+  const { refresh, handleRefresh } = useRefresh(false);
 
   useEffect(() => {
     document.title = "Gender Main Page";

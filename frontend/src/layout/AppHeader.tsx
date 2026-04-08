@@ -11,7 +11,7 @@ const AppHeader = () => {
             {isOpen && (
                 <div className="fixed inset-0 z-40" onClick={toggleUserMenu} />
             )}
-            <nav className="fixed top-0 z-50 w-full bg-white border-b border-gray-200 dark:bg-gray-800 dark:border-gray-700">
+            <nav className="fixed top-0 z-50 w-full bg-neutral-primary-soft border-b border-default">
                 <div className="px-3 py-3 lg:px-5 lg:pl-3">
                     <div className="flex items-center justify-between">
                         <div className="flex items-center justify-start rtl:justify-end">
@@ -57,16 +57,16 @@ const AppHeader = () => {
                                     </button>
                                 </div>
                                 <div
-                                    className={`absolute right-8 top-9 min-w-[200px] z-50 ${isOpen ? "block" : "hidden"} my-4 text-base list-none bg-white divide-y divide-gray-100 rounded-sm shadow-sm dark:bg-gray-700 dark:divide-gray-600`}
                                     id="dropdown-user"
+                                    className={`absolute right-8 top-9 min-w-[200px] z-50 ${isOpen ? "block" : "hidden"} bg-neutral-primary-medium border border-default-medium rounded-base shadow-lg w-44`}
                                 >
                                     <div className="px-4 py-3 border-b border-default-medium" role="none">
                                         <p
-                                            className="text-sm text-gray-900 dark:text-white"
+                                            className="text-sm font-medium text-heading"
                                             role="none">
                                             Neil Sims
                                         </p>
-                                        <p className="text-sm font-medium text-gray-900 truncate dark:text-gray-300" role="none">
+                                        <p className="text-sm text-body truncate" role="none">
                                             neil.sims@flowbite.com
                                         </p>
                                     </div>
@@ -74,9 +74,8 @@ const AppHeader = () => {
                                         <li>
                                             <Link
                                                 to="#"
-                                                className="block py-2 px-4 text-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 dark:text-gray-300"
-                                                role="menuitem"
-                                            >
+                                                className="inline-flex items-center w-full p-2 hover:bg-neutral-tertiary-medium hover:text-heading rounded"
+                                                role="menuitem">
                                                 Sign out
                                             </Link>
                                         </li>
