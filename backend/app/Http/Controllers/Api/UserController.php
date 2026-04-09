@@ -9,8 +9,8 @@ use Illuminate\Validation\Rule;
 
 class UserController extends Controller
 {
-
-    public function loadUsers() {
+    public function loadUsers()
+    {
         $users = User::with(['gender'])
             ->where('tbl_users.is_deleted', false)
             ->get();
@@ -19,6 +19,7 @@ class UserController extends Controller
             'users' => $users
         ], 200);
     }
+
     public function storeUser(Request $request)
     {
         $validated = $request->validate([
@@ -40,7 +41,7 @@ class UserController extends Controller
             'middle_name' => $validated['middle_name'],
             'last_name' => $validated['last_name'],
             'suffix_name' => $validated['suffix_name'],
-            'gender_id' => (int) $validated['gender'],
+            'gender_id' => $validated['gender'],
             'birth_date' => $validated['birth_date'],
             'age' => $age,
             'username' => $validated['username'],
@@ -50,5 +51,36 @@ class UserController extends Controller
         return response()->json([
             'message' => 'User Successfully Saved.',
         ], 200);
+    }
+
+    public function updateUser(Request $request, User $user) {
+        $validated = $request->validate([
+            'first_name' => ['required', 'max:55'],
+            'middle_name' => ['nullable', 'max:55'],
+            'last_name' => ['required', 'max:55'],
+            'suffix_name' => ['nullable', 'max:55'],
+            'gender' => ['required', 'exists:tbl_genders,gender_id'],
+            'birth_date' => ['required', 'date'],
+            'username' => ['required', 'min:6', 'max:12', Rule::unique('tbl_users', 'username')->ignore($user)]
+        ]);
+
+        $age = date_diff(date_create($validated['birth_date']), date_create('now'))->y;
+
+        $user->update([
+            'first_name' => $validated['first_name'],
+            'middle_name' => $validated['middle_name'],
+            'last_name' => $validated['last_name'],
+            'suffix_name' => $validated['suffix_name'],
+            'gender_id' => $validated['gender'],
+            'birth_date' => $validated['birth_date'],
+            'age' => $age,
+            'username' => $validated['username'],
+        ]);
+
+        return response()->json([
+            'message' => 'User Successfully Updated.',
+            'user' => $user
+        ], 200);
+
     }
 }

@@ -33,13 +33,7 @@ class GenderController extends Controller
     }
 
     public function getGender($genderID) {
-        $gender = Gender::where('tbl_genders.is_deleted', false)->find($genderID);
-
-        if (! $gender) {
-            return response()->json([
-                'message' => 'Gender not found.',
-            ], 404);
-        }
+        $gender = Gender::find($genderID);
 
         return response()->json([
             'gender' => $gender,
@@ -48,11 +42,6 @@ class GenderController extends Controller
 
     public function updateGender(Request $request, Gender $gender)
     {
-        if ($gender->is_deleted) {
-            return response()->json([
-                'message' => 'Gender not found.',
-            ], 404);
-        }
 
         $validated = $request->validate([
             'gender' => ['required', 'min:3', 'max:30'],
@@ -68,7 +57,8 @@ class GenderController extends Controller
         ], 200);
     }
 
-    public function destroyGender(Gender $gender) {
+    public function destroyGender(Gender $gender)
+    {
         $gender->update([
             'is_deleted' => true
         ]);

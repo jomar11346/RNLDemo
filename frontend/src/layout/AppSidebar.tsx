@@ -7,11 +7,11 @@ const AppSidebar = () => {
     const sidebarItems = [
         {
             path: '/',
-            text: 'Gender',
+            text: 'Genders',
         },
         {
             path: '/users',
-            text: 'User',
+            text: 'Users',
         }
     ]
 
