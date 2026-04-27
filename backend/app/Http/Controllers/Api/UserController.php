@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\Rule;
 
@@ -47,6 +48,8 @@ class UserController extends Controller
 
     public function storeUser(Request $request)
     {
+        $hasProfilePictureColumn = Schema::hasColumn('tbl_users', 'profile_picture');
+
         $validated = $request->validate([
             'add_user_profile_picture' => ['nullable', 'image', 'mimes:png,jpg,jpeg'],
             'first_name' => ['required', 'max:55'],
@@ -60,7 +63,7 @@ class UserController extends Controller
             'password_confirmation' => ['required', 'min:6', 'max:12']
         ]);
 
-        if ($request->hasFile('add_user_profile_picture')) {
+        if ($hasProfilePictureColumn && $request->hasFile('add_user_profile_picture')) {
             $filenameWithExtension = $request->file('add_user_profile_picture');
             $filename = pathinfo($filenameWithExtension->getClientOriginalName(), PATHINFO_FILENAME);
             $extension = $filenameWithExtension->getClientOriginalExtension();
@@ -71,8 +74,7 @@ class UserController extends Controller
 
         $age = date_diff(date_create($validated['birth_date']), date_create('now'))->y;
 
-        User::create([
-            'profile_picture' => $validated['add_user_profile_picture'],
+        $createData = [
             'first_name' => $validated['first_name'],
             'middle_name' => $validated['middle_name'],
             'last_name' => $validated['last_name'],
@@ -82,7 +84,13 @@ class UserController extends Controller
             'age' => $age,
             'username' => $validated['username'],
             'password' => $validated['password']
-        ]);
+        ];
+
+        if ($hasProfilePictureColumn) {
+            $createData['profile_picture'] = $validated['add_user_profile_picture'] ?? null;
+        }
+
+        User::create($createData);
 
         return response()->json([
             'message' => 'User Successfully Saved.'
@@ -91,6 +99,8 @@ class UserController extends Controller
 
     public function updateUser(Request $request, User $user)
     {
+        $hasProfilePictureColumn = Schema::hasColumn('tbl_users', 'profile_picture');
+
         $validated = $request->validate([
             'edit_user_profile_picture' => ['nullable', 'image', 'mimes:png,jpg,jpeg'],
             'first_name' => ['required', 'max:55'],
@@ -102,12 +112,12 @@ class UserController extends Controller
             'username' => ['required', 'min:6', 'max:12', Rule::unique('tbl_users', 'username')->ignore($user)]
         ]);
 
-        if ($request->has('remove_profile_picture') && $request->remove_profile_picture == '1') {
+        if ($hasProfilePictureColumn && $request->has('remove_profile_picture') && $request->remove_profile_picture == '1') {
             if ($user->profile_picture && Storage::exists('public/img/user/profile_picture/' . $user->profile_picture)) {
                 Storage::delete('public/img/user/profile_picture/' . $user->profile_picture);
                 $user->profile_picture = null;
             }
-        } else if ($request->hasFile('edit_user_profile_picture')) {
+        } else if ($hasProfilePictureColumn && $request->hasFile('edit_user_profile_picture')) {
             if ($user->profile_picture && Storage::exists('public/img/user/profile_picture/' . $user->profile_picture)) {
                 Storage::delete('public/img/user/profile_picture/' . $user->profile_picture);
             }
@@ -122,8 +132,7 @@ class UserController extends Controller
 
         $age = date_diff(date_create($validated['birth_date']), date_create('now'))->y;
 
-        $user->update([
-            'profile_picture' => $validated['edit_user_profile_picture'] ?? $user->profile_picture,
+        $updateData = [
             'first_name' => $validated['first_name'],
             'middle_name' => $validated['middle_name'],
             'last_name' => $validated['last_name'],
@@ -132,9 +141,19 @@ class UserController extends Controller
             'birth_date' => $validated['birth_date'],
             'age' => $age,
             'username' => $validated['username']
-        ]);
+        ];
 
-        $user->profile_picture = $user->profile_picture ? url('storage/public/img/user/profile_picture/' . $user->profile_picture) : null;
+        if ($hasProfilePictureColumn) {
+            $updateData['profile_picture'] = $validated['edit_user_profile_picture'] ?? $user->profile_picture;
+        }
+
+        $user->update($updateData);
+
+        if ($hasProfilePictureColumn) {
+            $user->profile_picture = $user->profile_picture ? url('storage/public/img/user/profile_picture/' . $user->profile_picture) : null;
+        } else {
+            $user->profile_picture = null;
+        }
 
         return response()->json([
             'message' => 'User Successfully Updated.',

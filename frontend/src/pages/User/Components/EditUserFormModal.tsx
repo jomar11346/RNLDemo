@@ -65,7 +65,7 @@ const EditUserFormModal: FC<EditUserFormModalProps> = ({
             const res = await UserService.updateUser(user?.user_id!, formData);
 
             if(res.status === 200) {
-                setExistingUserProfilePicture(res.data.user.user_profile_picture ? res.data.user.user_profile_picture : null);
+                setExistingUserProfilePicture(res.data.user.profile_picture ? res.data.user.profile_picture : null);
                 setEditUserProfilePicture(null);
                 setFirstName(res.data.user.first_name);
                 setMiddleName(res.data.user.middle_name ?? "");
